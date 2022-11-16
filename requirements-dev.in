@@ -1,6 +1,7 @@
 nltk
 spacy
 pandas
+demoji
 plotly
 pyarrow
 openpyxl
