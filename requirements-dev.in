@@ -5,6 +5,7 @@ spacy
 pandas
 demoji
 plotly
+hdbscan
 pyarrow
 openpyxl
 wordcloud

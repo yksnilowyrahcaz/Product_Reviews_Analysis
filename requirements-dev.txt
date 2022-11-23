@@ -73,6 +73,8 @@ cymem==2.0.7
     #   preshed
     #   spacy
     #   thinc
+cython==0.29.32
+    # via hdbscan
 dask==2022.11.1
     # via datashader
 datashader==0.14.3
@@ -99,6 +101,8 @@ fonttools==4.37.4
     # via matplotlib
 fsspec==2022.11.0
     # via dask
+hdbscan==0.8.29
+    # via -r requirements-dev.in
 holoviews==1.15.2
     # via umap-learn
 idna==3.4
@@ -144,6 +148,7 @@ jinja2==3.1.2
     #   spacy
 joblib==1.2.0
     # via
+    #   hdbscan
     #   nltk
     #   pynndescent
     #   scikit-learn
@@ -262,6 +267,7 @@ numpy==1.23.4
     #   contourpy
     #   datashader
     #   datashape
+    #   hdbscan
     #   holoviews
     #   imageio
     #   matplotlib
@@ -422,11 +428,13 @@ scikit-image==0.19.3
 scikit-learn==1.1.2
     # via
     #   -r requirements-dev.in
+    #   hdbscan
     #   pynndescent
     #   umap-learn
 scipy==1.9.2
     # via
     #   datashader
+    #   hdbscan
     #   pynndescent
     #   scikit-image
     #   scikit-learn
