@@ -1,6 +1,6 @@
 import pandas as pd
 
-def optimize_mem_usage(df):
+def optimize_mem_usage(df, ignore):
     ''' 
     iterate through all the columns of a dataframe 
     and modify the data type to reduce memory usage.       
@@ -8,9 +8,9 @@ def optimize_mem_usage(df):
     start_mem = df.memory_usage(deep=True).sum()
     print(f'Memory usage of dataframe is {start_mem:,.0f} bytes')
         
-    float_cols = df.select_dtypes('float').columns
-    cat_cols = df.select_dtypes('object').columns
-    int_cols = df.select_dtypes('int').columns
+    float_cols = [col for col in df.select_dtypes('float').columns if col not in ignore]
+    cat_cols = [col for col in df.select_dtypes('object').columns if col not in ignore]
+    int_cols = [col for col in df.select_dtypes('int').columns if col not in ignore]
 
     for col in df.columns:
         if col in cat_cols:
