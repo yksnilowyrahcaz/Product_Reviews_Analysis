@@ -1,5 +1,9 @@
 # data files
 data/
+cluster_data/
+extras/
+figures/
+labeled_data/
 
 # assets
 assets/

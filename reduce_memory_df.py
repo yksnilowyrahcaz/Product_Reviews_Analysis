@@ -3,7 +3,10 @@ import pandas as pd
 def optimize_mem_usage(df, ignore):
     ''' 
     iterate through all the columns of a dataframe 
-    and modify the data type to reduce memory usage.       
+    and modify the data type to reduce memory usage.
+
+    df: pandas DataFrame to optimize
+    ignore: list of columns in df to ignore
     '''
     start_mem = df.memory_usage(deep=True).sum()
     print(f'Memory usage of dataframe is {start_mem:,.0f} bytes')
