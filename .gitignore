@@ -4,6 +4,7 @@ cluster_data/
 extras/
 figures/
 labeled_data/
+labeled_samples/
 
 # assets
 assets/
