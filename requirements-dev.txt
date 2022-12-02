@@ -42,9 +42,12 @@ charset-normalizer==2.1.1
     # via requests
 click==7.1.2
     # via
+    #   dask
     #   nltk
     #   typer
     #   yake
+cloudpickle==2.2.0
+    # via dask
 colorama==0.4.5
     # via
     #   ipython
@@ -62,6 +65,8 @@ cymem==2.0.7
     #   thinc
 cython==0.29.32
     # via hdbscan
+dask==2022.11.1
+    # via -r requirements-dev.in
 debugpy==1.6.3
     # via ipykernel
 decorator==5.1.1
@@ -80,6 +85,8 @@ fastjsonschema==2.16.2
     # via nbformat
 fonttools==4.37.4
     # via matplotlib
+fsspec==2022.11.0
+    # via dask
 hdbscan==0.8.29
     # via -r requirements-dev.in
 idna==3.4
@@ -170,6 +177,8 @@ llvmlite==0.39.1
     # via
     #   numba
     #   pynndescent
+locket==1.0.0
+    # via partd
 markupsafe==2.1.1
     # via
     #   jinja2
@@ -244,6 +253,7 @@ openpyxl==3.0.10
 packaging==21.3
     # via
     #   bokeh
+    #   dask
     #   ipykernel
     #   jupyter-server
     #   jupyterlab
@@ -257,6 +267,8 @@ pandocfilters==1.5.0
     # via nbconvert
 parso==0.8.3
     # via jedi
+partd==1.3.0
+    # via dask
 pathy==0.6.2
     # via spacy
 pickleshare==0.7.5
@@ -320,7 +332,9 @@ pywinpty==2.0.8
     #   jupyter-server
     #   terminado
 pyyaml==6.0
-    # via bokeh
+    # via
+    #   bokeh
+    #   dask
 pyzmq==24.0.1
     # via
     #   ipykernel
@@ -396,6 +410,10 @@ tinycss2==1.1.1
     # via nbconvert
 tomli==2.0.1
     # via jupyterlab
+toolz==0.12.0
+    # via
+    #   dask
+    #   partd
 tornado==6.2
     # via
     #   bokeh
