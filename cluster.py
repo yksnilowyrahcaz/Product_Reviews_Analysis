@@ -54,7 +54,7 @@ def embed_and_cluster(file_path):
         pd.Series(labels).reset_index().rename(columns={0:'cluster'})
         ], axis=1).drop(['index'], axis=1)
     new_df.cluster = new_df.cluster.astype('category')
-    new_df.to_parquet(f'assets/{name}_clustered_embeddings.parquet')
+    new_df.to_parquet(f'cluster_data/{name}_clustered_embeddings.parquet')
 
     print('generating plot ...')
     list_x = embedding.embedding_[:,0].tolist()

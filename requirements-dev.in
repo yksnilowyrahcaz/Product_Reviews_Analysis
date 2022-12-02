@@ -5,6 +5,7 @@ demoji
 plotly
 hdbscan
 pyarrow
+colorcet
 openpyxl
 wordcloud
 ipywidgets

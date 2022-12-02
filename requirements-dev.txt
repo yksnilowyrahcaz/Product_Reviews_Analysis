@@ -56,6 +56,8 @@ colorama==0.4.6
     #   click
     #   ipython
     #   tqdm
+colorcet==3.0.1
+    # via -r requirements-dev.in
 confection==0.0.3
     # via thinc
 contourpy==1.0.6
@@ -285,6 +287,8 @@ pandas==1.5.2
     # via dask
 pandocfilters==1.5.0
     # via nbconvert
+param==1.12.2
+    # via pyct
 parso==0.8.3
     # via jedi
 partd==1.3.0
@@ -323,6 +327,8 @@ pyarrow==10.0.1
     # via -r requirements-dev.in
 pycparser==2.21
     # via cffi
+pyct==0.4.8
+    # via colorcet
 pydantic==1.10.2
     # via
     #   confection
