@@ -6,9 +6,6 @@ figures/
 labeled_data/
 labeled_samples/
 
-# assets
-assets/
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
