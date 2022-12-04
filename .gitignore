@@ -5,7 +5,7 @@ extras/
 figures/
 labeled_data/
 labeled_samples/
-cats/
+samples/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
