@@ -1,6 +1,6 @@
-from utils import plot_embeddings, plot_clustered_embeddings
 import os, re, time, logging, umap, hdbscan, yake, pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
+from utils import plot_embeddings, plot_clustered_embeddings, get_lex_fields
+from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,9 +24,9 @@ def pipeline(file_path):
     '''
     log_and_print(f'Processing {file_path} ...')
     df = pd.read_parquet(f'data/{file_path}')
-    df = df[(df.verified_purchase == 'Y') & (df.helpful_votes/df.total_votes >= 0.8)]
-    docs = df.product_title.str[:].copy() + ' ' + df.review.str[:].copy()
-    sample = docs.sample(min(100000, docs.shape[0]), random_state=1729).to_frame().rename(columns={0:'docs'})
+    df = df[df.verified_purchase == 'Y']
+    sample = df.sample(min(100000, df.shape[0]), random_state=1729)
+    sample['docs'] = df.product_title.str[:].copy() + ' ' + df.review.str[:].copy()    
     name = re.findall('(?<=reviews_)[.\w]*(?=.parq)', file_path)[0].lower()    
 
     log_and_print('tfidf vectorizing data ...')
@@ -36,9 +36,9 @@ def pipeline(file_path):
 
     log_and_print('learning UMAP embedding ...')
     embedding = umap.UMAP(
-        n_neighbors=30, 
-        min_dist=0.0, 
-        n_components=2, 
+        n_neighbors=30,
+        min_dist=0.0,
+        n_components=2,
         metric='hellinger'
         ).fit(doc_term_matrix)
 
@@ -65,16 +65,21 @@ def pipeline(file_path):
     plot_embeddings(sample, name)
     plot_clustered_embeddings(sample, name)
 
-    log_and_print('Processing complete')
+    log_and_print('getting sentiment lexical fields ...')
+    return get_lex_fields(sample, name)
 
 if __name__ == '__main__':
+    dfs = []
     files = [file for file in os.listdir('data')]
     for file in files:
         start = time.time()
         try:
-            pipeline(file)
+            dfs.append(pipeline(file))
             print(f'Total time: {(time.time()-start)/60:,.2f} minutes')
         except Exception as e:
             logging.info(e.args)
             print('Exception encountered. See log for details. Continuing to next file.')
-            continue  
+            continue 
+
+    pd.concat(dfs).to_parquet('key_topics.parquet', index=False)
+    print('Process Complete')
