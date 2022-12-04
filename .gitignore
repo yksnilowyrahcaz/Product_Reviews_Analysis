@@ -6,6 +6,7 @@ figures/
 labeled_data/
 labeled_samples/
 samples/
+transformer_model/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

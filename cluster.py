@@ -24,7 +24,7 @@ def pipeline(file_path):
     '''
     log_and_print(f'Processing {file_path} ...')
     df = pd.read_parquet(f'data/{file_path}')
-    df = df[df.verified_purchase == 'Y']
+    df = df[(df.verified_purchase == 'Y') & (df.helpful_votes/df.total_votes > 0.5)]
     sample = df.sample(min(100000, df.shape[0]), random_state=1729)
     sample['docs'] = df.product_title.str[:].copy() + ' ' + df.review.str[:].copy()    
     name = re.findall('(?<=reviews_)[.\w]*(?=.parq)', file_path)[0].lower()    
@@ -61,6 +61,8 @@ def pipeline(file_path):
     sample['labels'] = sample.clusters.map(kwd)
 
     log_and_print('saving data and generating plots ...')
+    sample.drop(columns='docs', inplace=True)
+    sample = sample.astype({col:'category' for col in ['clusters','labels']})
     sample.to_parquet(f'samples/{name}_clustered_embeddings.parquet', index=False)
     plot_embeddings(sample, name)
     plot_clustered_embeddings(sample, name)

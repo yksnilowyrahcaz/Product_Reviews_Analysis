@@ -17,7 +17,7 @@ def plot_embeddings(df, name):
         tooltips=[('index', '$index'),('(x,y)', '(@x, @y)'),('desc', '@desc')])
 
     f = figure(width=800, height=800, tools=[hover, 'pan, wheel_zoom, reset'])
-    f.title.text = f'UMAP Applied to a Random Sample of {df.shape[0]:,} Reviews'
+    f.title.text = f'UMAP Applied to a Random Sample of {df.shape[0]:,} {title} Reviews'
     f.title.text_font_size = '15px'
     f.title.align = 'center'
 
@@ -39,7 +39,7 @@ def plot_clustered_embeddings(df, name):
         tooltips=[('index', '$index'), ('(x,y)', '(@x, @y)'), ('desc', '@desc')])
 
     f = figure(width=935, height=800, tools=[hover, 'pan, wheel_zoom, reset'])
-    f.title.text = 'HDBSCAN Applied to UMAP Embeddings. Clusters Labeled Using YAKE'
+    f.title.text = f'HDBSCAN Applied to {title} UMAP Embeddings. Clusters Labeled Using YAKE'
     f.title.text_font_size = '15px'
     f.title.align = 'center'
 
