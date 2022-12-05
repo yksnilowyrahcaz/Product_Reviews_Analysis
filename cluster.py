@@ -60,12 +60,12 @@ def pipeline(file_path):
         kwd[cluster[0]] = kwx.extract_keywords(text)[0][0].lower()
     sample['labels'] = sample.clusters.map(kwd)
 
-    log_and_print('saving data and generating plots ...')
-    sample.drop(columns='docs', inplace=True)
-    sample = sample.astype({col:'category' for col in ['clusters','labels']})
-    sample.to_parquet(f'samples/{name}_clustered_embeddings.parquet', index=False)
+    log_and_print('generating plots and saving data ...')
     plot_embeddings(sample, name)
     plot_clustered_embeddings(sample, name)
+    sample.drop('docs', axis=1, inplace=True)
+    sample = sample.astype({col:'category' for col in ['clusters','labels']})
+    sample.to_parquet(f'samples/{name}_clustered_embeddings.parquet', index=False)
 
     log_and_print('getting sentiment lexical fields ...')
     return get_lex_fields(sample, name)
