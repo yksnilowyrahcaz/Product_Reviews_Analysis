@@ -1,10 +1,6 @@
 # data files
-data/
-cluster_data/
+cleaned_data/
 extras/
-figures/
-labeled_data/
-labeled_samples/
 samples/
 transformer_model/
 
