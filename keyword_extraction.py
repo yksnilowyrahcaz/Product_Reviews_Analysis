@@ -1,14 +1,8 @@
-import pandas as pd
-import os, logging, time, yake
-
-logging.basicConfig(
-    filename='log.log',
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
-)
+from logger import *
+import pathlib, time, yake, pandas as pd
 
 def add_keyword_labels(df):
-    kwd = {-1:'unclustered'}
+    kwd = {-1: 'unclustered'}
     kwx = yake.KeywordExtractor(n=1, top=1)
     for cluster in df[df.cluster!=-1].groupby('cluster'):
         text = ' '.join(cluster[1].review.tolist())
@@ -17,18 +11,16 @@ def add_keyword_labels(df):
     return df
 
 if __name__ == '__main__':
-    files = [file for file in os.listdir('cluster_data')]
-    for file in files:
+    for file_path in pathlib.Path.cwd().glob('data/*.tsv'):
         start = time.time()
-        msg = f'labeling {file} ...'
-        logging.info(msg)
-        print(msg)
-
+        
+        logging.info(f'Reading file.')
         df = pd.read_parquet(f'cluster_data/{file}')
+        
+        logging.info('Labeling data.')
         df = add_keyword_labels(df)
+        
+        logging.info('Saving labeled data.')
         df.to_parquet(f'labeled_data/{file}')
 
-        msg = f'finished labeling, saved to labeled_data/{file}'
-        logging.info(msg)
-        print(msg)
-        print(f'Total time: {(time.time()-start)/60:,.2f} minutes')
+        logging.info(f'Total time: {(time.time()-start) / 60:,.2f} minutes')

@@ -1,5 +1,4 @@
-import pandas as pd
-import os, logging, time
+import os, logging, time, pandas as pd
 
 logging.basicConfig(
     filename='log.log',

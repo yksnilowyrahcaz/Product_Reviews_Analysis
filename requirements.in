@@ -1,0 +1,8 @@
+bokeh
+colorcet
+hdbscan
+pandas >= 2
+pyarrow
+scikit-learn
+umap-learn
+yake
