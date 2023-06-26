@@ -1,70 +1,91 @@
+from pathlib import Path
 from bokeh.transform import factor_cmap
-import re, yake, pandas as pd, colorcet as cc
+import colorcet as cc, pandas as pd, yake
 from bokeh.plotting import save, output_file, figure
 from bokeh.models import ColumnDataSource, HoverTool, Legend
 from sklearn.feature_extraction.text import CountVectorizer, ENGLISH_STOP_WORDS
 
-def plot_embeddings(df, name):
-    title = re.findall('(?<=reviews_)[.\w]*(?=_v1)', name)[0]
-    desc = df.docs.to_list()
-    output_file(filename=f'samples/embedded_{name}.html', title=f'{title} Embeddings')
-    source = ColumnDataSource(data=dict(x=df.e1.tolist(), y=df.e2.tolist(), desc=desc))
+Path(Path.cwd(), 'plots').mkdir(parents=True, exist_ok=True)
+
+def plot_embeddings(df: pd.DataFrame, dataset_name: str) -> None:
+    desc = df['docs'].to_list()
+    output_file(
+        filename=f'plots/embedded_{dataset_name.replace(" ", "_")}.html', 
+        title=f'{dataset_name} Embeddings'
+    )
+    source = ColumnDataSource(
+        data=dict(x=df['e1'].tolist(), y=df['e2'].tolist(), desc=desc)
+    )
     hover = HoverTool(
-        tooltips=[('index', '$index'), ('(x,y)', '(@x, @y)'), ('desc', '@desc')]
+        tooltips=[('index', '$index'), ('(x, y)', '(@x, @y)'), ('desc', '@desc')]
     )
     f = figure(width=800, height=800, tools=[hover, 'pan, wheel_zoom, reset'])
-    f.title.text = f'UMAP Applied to a Random Sample of {df.shape[0]:,} {title} Reviews'
+    f.title.text = f'UMAP Applied to a Random Sample of {df.shape[0]:,} {dataset_name} Reviews.'
     f.title.text_font_size = '15px'
     f.title.align = 'center'
     f.scatter('x', 'y', source=source, size=1, color='navy', alpha=0.7)
     save(f)
 
-def plot_clustered_embeddings(df, name):
-    labels = df.labels.tolist()
-    title = re.findall('(?<=reviews_)[.\w]*(?=_v1)', name)[0]
-    desc = df.docs.to_list()
-    output_file(filename=f'samples/clustered_{name}.html', title=f'{title} Clusters')
+def plot_clustered_embeddings(df: pd.DataFrame, dataset_name: str) -> None:
+    topics = df['topics'].tolist()
+    desc = df['docs'].to_list()
+    output_file(
+        filename=f'plots/clustered_{dataset_name.replace(" ", "_")}.html', 
+        title=f'{dataset_name} Clusters'
+    )
     source = ColumnDataSource(
-        data=dict(x=df.e1.tolist(), y=df.e2.tolist(), desc=desc, labels=labels)
+        data=dict(x=df['e1'].tolist(), y=df['e2'].tolist(), desc=desc, topics=topics)
     )
     hover = HoverTool(
-        tooltips=[('index', '$index'), ('(x,y)', '(@x, @y)'), ('desc', '@desc')]
+        tooltips=[('index', '$index'), ('(x, y)', '(@x, @y)'), ('desc', '@desc')]
     )
     f = figure(width=935, height=800, tools=[hover, 'pan, wheel_zoom, reset'])
-    f.title.text = f'HDBSCAN Applied to {title} UMAP Embeddings. Clusters Labeled Using YAKE'
+    f.title.text = f'HDBSCAN Applied to {dataset_name} UMAP Embeddings. Clusters Labeled Using YAKE.'
     f.title.text_font_size = '15px'
     f.title.align = 'center'
-    labels = [x for x in labels if x != 'unclustered']
+    topics = [x for x in topics if x != 'unclustered']
     mapper = factor_cmap(
-        field_name='labels',
-        palette=['#EEEEEE'] + cc.glasbey[:len(set(labels))], 
-        factors=['unclustered'] + list(set(labels))
+        field_name='topics',
+        palette=['#EEEEEE'] + cc.glasbey[:len(set(topics))], 
+        factors=['unclustered'] + list(set(topics))
     )
     f.add_layout(Legend(),'right')
-    f.scatter('x', 'y', legend_group='labels', source=source, size=1, color=mapper, alpha=0.7)
+    f.scatter('x', 'y', legend_group='topics', source=source, size=1, color=mapper, alpha=0.7)
     save(f)
 
-def get_keywords(text):
+def get_keywords(text) -> str:
     kwx = yake.KeywordExtractor(n=1, top=30)
-    return ' '.join([x[0] for x in kwx.extract_keywords(text)])  
+    return ' '.join([word[0] for word in kwx.extract_keywords(text)])  
 
-def get_lex_fields(df, name):
-    bad = df[df.star_rating <= 3].labels.value_counts()
-    good = df[df.star_rating > 3].labels.value_counts()
-    dff = pd.concat([bad.sort_index(), good.sort_index()], axis=1).reset_index()
-    dff.columns = 'labels', 'bad', 'good'
-    dff['ranking'] = dff.bad / dff.good
-    dff['product_category'] = name.replace('_',' ')
+def get_sentiment_keywords(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Extract keywords for each label in bad (1-3 stars) and good (4-5 stars) reviews
+    '''
+    bad_label_counts = df[df['star_rating'] <= 3]['topics'].value_counts().sort_index()
+    good_label_counts = df[df['star_rating'] > 3]['topics'].value_counts().sort_index()
+    rating_df = pd.concat([bad_label_counts, good_label_counts], axis=1).reset_index()
+    rating_df.columns = 'topics', 'bad', 'good'
+    rating_df['ranking'] = rating_df['bad'] / rating_df['good']
+    
     stop_words = ENGLISH_STOP_WORDS.union({'star', 'stars'})
-    bad_vecs = CountVectorizer(min_df=5, stop_words=stop_words)
-    good_vecs = CountVectorizer(min_df=5, stop_words=stop_words)
-    x = {}
-    for g in df.groupby('labels'):
-        bad_set = set(bad_vecs.fit(g[1][g[1].star_rating <= 3].review).vocabulary_.keys())
-        good_set = set(good_vecs.fit(g[1][g[1].star_rating > 3].review).vocabulary_.keys())
-        x[g[0]] = {
+    bad_vectorizer = CountVectorizer(min_df=5, stop_words=stop_words)
+    good_vectorizer = CountVectorizer(min_df=5, stop_words=stop_words)
+    
+    lex_fields = {}
+    for g in df.groupby('topics'):
+        bad_set = set(
+            bad_vectorizer.fit(
+                g[1][g[1]['star_rating'] <= 3]['review']
+            ).vocabulary_.keys()
+        )
+        good_set = set(
+            good_vectorizer.fit(
+                g[1][g[1]['star_rating'] > 3]['review']
+            ).vocabulary_.keys()
+        )
+        lex_fields[g[0]] = {
             'bad_set': ' '.join(bad_set.difference(good_set)), 
             'good_set': ' '.join(good_set.difference(bad_set))
         }
-    df = pd.DataFrame(x).T.applymap(get_keywords).sort_index().reset_index()
-    return pd.concat([dff, df], axis=1).drop(columns='index')
+    lex_fields_df = pd.DataFrame(lex_fields).T.applymap(get_keywords).sort_index().reset_index()
+    return pd.concat([rating_df, lex_fields_df], axis=1).drop(columns='index')

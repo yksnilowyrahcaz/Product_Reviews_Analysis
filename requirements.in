@@ -1,6 +1,7 @@
 bokeh
 colorcet
 hdbscan
+numba == 0.56.4
 pandas >= 2
 pyarrow
 scikit-learn

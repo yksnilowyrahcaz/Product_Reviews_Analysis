@@ -1,5 +1,7 @@
 # data files
 data/
+plots/
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

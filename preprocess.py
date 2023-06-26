@@ -1,8 +1,9 @@
 from logger import *
-import csv, pathlib, time, pandas as pd
-from reduce_memory_df import optimize_mem_usage
+from pathlib import Path
+import csv, time, pandas as pd
+from reduce_df_memory import optimize_memory_usage
 
-def preprocess(file_path: pathlib.Path) -> None:
+def preprocess(file_path: Path) -> None:
     '''
     Preprocess Amazon US Customer Reviews Dataset tsv files.
     
@@ -14,6 +15,11 @@ def preprocess(file_path: pathlib.Path) -> None:
     4. Drop unneeded columns.
     5. Optimize memory usage through data types.
     6. Save to parquet.
+    
+    :param file_path: path to the tsv file
+    :type file_path: pathlib.Path
+    
+    :return: None
     '''
     logging.info('Reading file.')
     df = pd.read_csv(file_path, sep='\t', quoting=csv.QUOTE_NONE)
@@ -25,10 +31,10 @@ def preprocess(file_path: pathlib.Path) -> None:
     df['review'] = (df['review_headline'] + ' ' + df['review_body']).str.strip()
 
     logging.info('Dropping uneeded columns.')
-    df.drop(['marketplace', 'product_category', 'review_headline', 'review_body'], axis=1, inplace=True)
+    df.drop(['marketplace', 'review_headline', 'review_body'], axis=1, inplace=True)
 
     logging.info('Optimizing memory usage.')
-    optimize_mem_usage(df)
+    optimize_memory_usage(df)
 
     logging.info('Saving to parquet.')
     df.to_parquet('data/' + file_path.stem + '_preprocessed.parquet')
@@ -36,11 +42,11 @@ def preprocess(file_path: pathlib.Path) -> None:
     logging.info(f'Preprocessing complete.')
 
 if __name__ == '__main__':
-    for file_path in pathlib.Path.cwd().glob('data/*.tsv'):
+    for file_path in Path.cwd().glob('data/*.tsv'):
         start = time.time()
         try:
             preprocess(file_path)
             logging.info(f'Total time: {(time.time() - start) / 60:,.2f} minutes')
         except Exception as e:
-            logging.info(e.args)
+            logging.exception(e.args)
             continue

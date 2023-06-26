@@ -1,16 +1,8 @@
-import logging, pandas as pd
+from logger import *
+import pandas as pd
 from typing import List
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] - %(filename)s: line %(lineno)d - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('log.log'), logging.StreamHandler()]
-)
-
-def optimize_mem_usage(
-    df: pd.DataFrame, 
-    ignore: List[str] = []
-) -> pd.DataFrame:
+def optimize_memory_usage(df: pd.DataFrame, ignore: List[str] = []) -> pd.DataFrame:
     ''' 
     Iterate through all the columns of a pandas DataFrame 
     and downcast or modify types to reduce memory usage.
