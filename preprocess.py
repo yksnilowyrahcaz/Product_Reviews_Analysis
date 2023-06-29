@@ -21,7 +21,7 @@ def preprocess(file_path: Path) -> None:
     
     :return: None
     '''
-    logging.info('Reading file.')
+    logging.info(f'Reading {file_path.name}')
     df = pd.read_csv(file_path, sep='\t', quoting=csv.QUOTE_NONE)
 
     logging.info('Filling null values.')
@@ -42,7 +42,7 @@ def preprocess(file_path: Path) -> None:
     logging.info(f'Preprocessing complete.')
 
 if __name__ == '__main__':
-    for file_path in Path.cwd().glob('data/amazon_reviews_us_Gift_Card_v1_00.tsv'):
+    for file_path in Path.cwd().glob('data/*.tsv'):
         start = time.time()
         try:
             preprocess(file_path)

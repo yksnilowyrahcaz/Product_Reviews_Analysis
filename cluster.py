@@ -30,8 +30,10 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     
     :return: pd.DataFrame
     '''
-    logging.info('Sampling reviews.')
+    logging.info(f'Reading {file_path.name}')
     df = pd.read_parquet(file_path)
+    
+    logging.info('Sampling reviews.')
     df = df[
         (df['verified_purchase'] == 'Y') & \
         (df['helpful_votes'] / df['total_votes'] > 0.5)
@@ -92,7 +94,7 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
 
 if __name__ == '__main__':
     dfs = []
-    for file_path in Path.cwd().glob('data/amazon_reviews_us_Gift_Card_v1_00_preprocessed.parquet'):
+    for file_path in Path.cwd().glob('data/*preprocessed.parquet'):
         start = time.time()
         try:
             dfs.append(run_pipeline(file_path))
