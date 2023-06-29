@@ -1,5 +1,6 @@
 bokeh
 colorcet
+dask
 hdbscan
 numba == 0.56.4
 pandas >= 2

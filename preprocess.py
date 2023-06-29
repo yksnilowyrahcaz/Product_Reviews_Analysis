@@ -42,7 +42,7 @@ def preprocess(file_path: Path) -> None:
     logging.info(f'Preprocessing complete.')
 
 if __name__ == '__main__':
-    for file_path in Path.cwd().glob('data/*.tsv'):
+    for file_path in Path.cwd().glob('data/amazon_reviews_us_Gift_Card_v1_00.tsv'):
         start = time.time()
         try:
             preprocess(file_path)

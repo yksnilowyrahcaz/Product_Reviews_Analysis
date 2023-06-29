@@ -38,9 +38,14 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     ]
     sample = df.sample(min(100_000, df.shape[0]), random_state=1729)
     sample['docs'] = df['product_title'].str[:] + ' ' + df['review'].str[:]
+    dataset_name = sample['product_category'].unique()[0].replace('_', ' ').title() \
+        if len(sample['product_category'].unique()) == 1 \
+        else 'Multilingual'    
 
     logging.info('TFIDF vectorizing data.')
-    stop_words = ENGLISH_STOP_WORDS.union({'star', 'stars'})
+    stop_words = ENGLISH_STOP_WORDS.union({
+        'star', 'stars', *dataset_name.lower().split()
+    })
     vectorizer = TfidfVectorizer(min_df=5, stop_words=stop_words)
     doc_term_matrix = vectorizer.fit_transform(sample['docs'])
 
@@ -63,25 +68,23 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
 
     logging.info('Learning YAKE cluster topics.')
     kwd = {-1: 'unclustered'}
-    kwx = yake.KeywordExtractor(n=1, top=1)
-    for cluster in sample[sample.clusters != -1].groupby('clusters'):
+    kwx = yake.KeywordExtractor(n=1, top=1, stopwords=stop_words)
+    for cluster in sample[sample['clusters'] != -1].groupby('clusters'):
         text = ' '.join(cluster[1]['docs'].tolist())
         kwd[cluster[0]] = kwx.extract_keywords(text)[0][0].lower()
     sample['topics'] = sample['clusters'].map(kwd)
 
-    logging.info('Generating plots and saving data.')
-    dataset_name = sample['product_category'].unique()[0].replace('_', ' ').title() \
-        if len(sample['product_category'].unique()) == 1 \
-        else 'Multilingual'
+    logging.info('Generating plots and saving key topics.')
+
     plot_embeddings(sample, dataset_name)
     plot_clustered_embeddings(sample, dataset_name)
-    sample.drop('docs', axis=1, inplace=True)
+    sample.drop(columns='docs', inplace=True)
     sample.to_parquet(
         f'data/{file_path.stem.replace("preprocessed", "sample")}_key_topics.parquet',
         index=False
     )
-    logging.info('Getting sentiment keywords.')
-    sentiment_df = get_sentiment_keywords(sample)
+    logging.info('Learning and saving topic keywords.')
+    sentiment_df = get_sentiment_keywords(sample, dataset_name, stop_words)
     sentiment_df.to_parquet(
         f'data/{file_path.stem.replace("preprocessed", "sample")}_keywords.parquet'
     )
@@ -89,7 +92,7 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
 
 if __name__ == '__main__':
     dfs = []
-    for file_path in Path.cwd().glob('data/*.parquet'):
+    for file_path in Path.cwd().glob('data/amazon_reviews_us_Gift_Card_v1_00_preprocessed.parquet'):
         start = time.time()
         try:
             dfs.append(run_pipeline(file_path))
@@ -99,4 +102,4 @@ if __name__ == '__main__':
             continue
 
     pd.concat(dfs).to_parquet('data/combined_keywords.parquet', index=False)
-    logging.info('Process Complete')
+    logging.info('Process complete.')
