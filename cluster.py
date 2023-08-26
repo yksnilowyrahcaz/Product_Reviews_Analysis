@@ -1,4 +1,4 @@
-from logger import *
+from zlogger import *
 from pathlib import Path
 import hdbscan, pandas as pd, time, umap, yake
 from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
@@ -77,7 +77,6 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     sample['topics'] = sample['clusters'].map(kwd)
 
     logging.info('Generating plots and saving key topics.')
-
     plot_embeddings(sample, dataset_name)
     plot_clustered_embeddings(sample, dataset_name)
     sample.drop(columns='docs', inplace=True)
@@ -88,13 +87,14 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     logging.info('Learning and saving topic keywords.')
     sentiment_df = get_sentiment_keywords(sample, dataset_name, stop_words)
     sentiment_df.to_parquet(
-        f'data/{file_path.stem.replace("preprocessed", "sample")}_keywords.parquet'
+        f'data/{file_path.stem.replace("preprocessed", "sample")}_keywords.parquet',
+        index=False
     )
     return sentiment_df
 
 if __name__ == '__main__':
     dfs = []
-    for file_path in Path.cwd().glob('data/*preprocessed.parquet'):
+    for file_path in Path.cwd().glob('data/amazon_reviews_us_Digital_Music_Purchase_v1_00_preprocessed.parquet'):
         start = time.time()
         try:
             dfs.append(run_pipeline(file_path))
@@ -103,5 +103,5 @@ if __name__ == '__main__':
             logging.exception(e.args)
             continue
 
-    pd.concat(dfs).to_parquet('data/combined_keywords.parquet', index=False)
+    pd.concat(dfs).to_parquet('data/_combined_keywords.parquet', index=False)
     logging.info('Process complete.')

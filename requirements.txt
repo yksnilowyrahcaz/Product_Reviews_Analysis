@@ -32,8 +32,9 @@ jellyfish==0.9.0
     # via yake
 jinja2==3.1.2
     # via bokeh
-joblib==1.2.0
+joblib==1.3.1
     # via
+    #   -r requirements.in
     #   hdbscan
     #   pynndescent
     #   scikit-learn
