@@ -5,6 +5,7 @@ hdbscan
 numba == 0.56.4
 pandas >= 2
 pyarrow
+pynndescent == 0.5.8
 scikit-learn
 umap-learn
 yake

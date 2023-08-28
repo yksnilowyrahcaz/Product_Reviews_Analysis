@@ -1,4 +1,4 @@
-from zlogger import *
+from logger import *
 from pathlib import Path
 import hdbscan, pandas as pd, time, umap, yake
 from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
@@ -42,21 +42,23 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     sample['docs'] = df['product_title'].str[:] + ' ' + df['review'].str[:]
     dataset_name = sample['product_category'].unique()[0].replace('_', ' ').title() \
         if len(sample['product_category'].unique()) == 1 \
-        else 'Multilingual'    
+        else 'Multilingual'
 
     logging.info('TFIDF vectorizing data.')
-    stop_words = ENGLISH_STOP_WORDS.union({
-        'star', 'stars', *dataset_name.lower().split()
-    })
-    vectorizer = TfidfVectorizer(min_df=5, stop_words=stop_words)
+    stop_words = list(
+        ENGLISH_STOP_WORDS.union({
+            'star', 'stars', *dataset_name.lower().split()
+        })
+    )
+    vectorizer = TfidfVectorizer(min_df=5, max_df=0.1, stop_words=stop_words)
     doc_term_matrix = vectorizer.fit_transform(sample['docs'])
 
     logging.info('Learning UMAP embeddings.')
     embedding = umap.UMAP(
         n_neighbors=30,
-        min_dist=0.0,
         n_components=2,
-        metric='hellinger'
+        metric='hellinger',
+        min_dist=0.0
     ).fit(doc_term_matrix)
     sample['e1'] = embedding.embedding_[:, 0]
     sample['e2'] = embedding.embedding_[:, 1]

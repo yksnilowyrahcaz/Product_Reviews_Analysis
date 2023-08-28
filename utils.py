@@ -66,9 +66,9 @@ def get_sentiment_keywords(df: pd.DataFrame, dataset_name: str, stop_words: set)
     rating_df['ranking'] = rating_df['bad'] / rating_df['good']
     rating_df['product_category'] = dataset_name.lower()
     rating_df['product_topic'] = rating_df['product_category'] + ' ' + rating_df['topics']
-    bad_vectorizer = CountVectorizer(min_df=5, stop_words=stop_words)
-    good_vectorizer = CountVectorizer(min_df=5, stop_words=stop_words)
-    
+    bad_vectorizer = CountVectorizer(stop_words=stop_words)
+    good_vectorizer = CountVectorizer(stop_words=stop_words)
+
     lex_fields = {}
     for g in df.groupby('topics'):
         bad_set = set(
