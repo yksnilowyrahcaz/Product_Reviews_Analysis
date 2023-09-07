@@ -1,7 +1,9 @@
 from logger import *
 from pathlib import Path
-import csv, time, pandas as pd
 from reduce_df_memory import optimize_memory_usage
+import csv
+import pandas as pd
+import time
 
 def preprocess(file_path: Path) -> None:
     '''

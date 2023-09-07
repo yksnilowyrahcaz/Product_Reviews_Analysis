@@ -1,8 +1,19 @@
 from logger import *
 from pathlib import Path
-import hdbscan, pandas as pd, time, umap, yake
-from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
-from utils import plot_embeddings, plot_clustered_embeddings, get_sentiment_keywords
+from sklearn.feature_extraction.text import (
+    TfidfVectorizer, 
+    ENGLISH_STOP_WORDS
+)
+from utils import (
+    plot_embeddings,
+    get_sentiment_keywords,
+    plot_clustered_embeddings
+)
+import hdbscan
+import pandas as pd
+import time
+import umap
+import yake
 
 def run_pipeline(file_path: Path) -> pd.DataFrame:
     '''
@@ -96,7 +107,7 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
 
 if __name__ == '__main__':
     dfs = []
-    for file_path in Path.cwd().glob('data/amazon_reviews_us_Digital_Music_Purchase_v1_00_preprocessed.parquet'):
+    for file_path in Path.cwd().glob('data/*preprocessed.parquet'):
         start = time.time()
         try:
             dfs.append(run_pipeline(file_path))

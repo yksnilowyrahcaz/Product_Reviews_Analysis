@@ -1,6 +1,8 @@
 from logger import *
 from pathlib import Path
-import dask, pandas as pd, time
+import dask
+import pandas as pd
+import time
 
 def sample_reviews(file_path: Path) -> tuple[pd.DataFrame]:
     '''
