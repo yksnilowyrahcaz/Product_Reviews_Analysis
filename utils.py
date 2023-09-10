@@ -1,15 +1,17 @@
-from pathlib import Path
-from bokeh.transform import factor_cmap
-import colorcet as cc, pandas as pd, yake
-from bokeh.plotting import save, output_file, figure
 from bokeh.models import ColumnDataSource, HoverTool, Legend
+from bokeh.plotting import save, output_file, figure
+from bokeh.transform import factor_cmap
+from pathlib import Path
 from sklearn.feature_extraction.text import CountVectorizer
+import colorcet as cc
+import pandas as pd
+import yake
 
 Path(Path.cwd(), 'plots').mkdir(parents=True, exist_ok=True)
 
 def plot_embeddings(df: pd.DataFrame, dataset_name: str) -> None:
     output_file(
-        filename=f'plots/embedded_{dataset_name.replace(" ", "_")}.html', 
+        filename=f'plots/embedded_{dataset_name.replace(" ", "_")}.html',
         title=f'{dataset_name} Embeddings'
     )
     source = ColumnDataSource(
@@ -44,16 +46,16 @@ def plot_clustered_embeddings(df: pd.DataFrame, dataset_name: str) -> None:
     clustered_topics = [topic for topic in unique_topics if topic != 'unclustered']
     mapper = factor_cmap(
         field_name='topics',
-        palette=['#EEEEEE'] + cc.glasbey[:len(clustered_topics)], 
+        palette=['#EEEEEE'] + cc.glasbey[:len(clustered_topics)],
         factors=['unclustered'] + clustered_topics
     )
-    f.add_layout(Legend(),'right')
+    f.add_layout(Legend(), 'right')
     f.scatter('e1', 'e2', legend_group='topics', source=source, size=1, color=mapper, alpha=0.7)
     save(f)
 
 def get_keywords(text: str) -> str:
     kwx = yake.KeywordExtractor(n=1, top=30)
-    return ' '.join([word[0] for word in kwx.extract_keywords(text)])  
+    return ' '.join([word[0] for word in kwx.extract_keywords(text)])
 
 def get_sentiment_keywords(df: pd.DataFrame, dataset_name: str, stop_words: set) -> pd.DataFrame:
     '''
@@ -71,18 +73,26 @@ def get_sentiment_keywords(df: pd.DataFrame, dataset_name: str, stop_words: set)
 
     lex_fields = {}
     for g in df.groupby('topics'):
-        bad_set = set(
-            bad_vectorizer.fit(
-                g[1][g[1]['star_rating'] <= 3]['review']
-            ).vocabulary_.keys()
-        )
-        good_set = set(
-            good_vectorizer.fit(
-                g[1][g[1]['star_rating'] > 3]['review']
-            ).vocabulary_.keys()
-        )
+        try:
+            bad_set = set(
+                bad_vectorizer.fit(
+                    g[1][g[1]['star_rating'] <= 3]['review']
+                ).vocabulary_.keys()
+            )
+        except:
+            bad_set = set()
+
+        try:
+            good_set = set(
+                good_vectorizer.fit(
+                    g[1][g[1]['star_rating'] > 3]['review']
+                ).vocabulary_.keys()
+            )
+        except:
+            good_set = set()
+
         lex_fields[g[0]] = {
-            'bad_set': ' '.join(bad_set.difference(good_set)), 
+            'bad_set': ' '.join(bad_set.difference(good_set)),
             'good_set': ' '.join(good_set.difference(bad_set))
         }
     lex_fields_df = pd.DataFrame(lex_fields).T.applymap(get_keywords).sort_index().reset_index()

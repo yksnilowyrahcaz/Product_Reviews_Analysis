@@ -12,21 +12,22 @@ from utils import (
 import hdbscan
 import pandas as pd
 import time
+import traceback
 import umap
 import yake
 
 def run_pipeline(file_path: Path) -> pd.DataFrame:
     '''
-    Performs the following:
+    Does the following:
     
     1. Filter on reviews having a verified purchase
     and helpful votes ratio > 50%.
     
     2. Uniformly sample at most 100,000 reviews per dataset.
     
-    3. TFIDF vectorize the reviews into a document term matrix.
+    3. TFIDF vectorize the reviews into a document-term matrix.
     
-    4. Embed the document term matrix in two dimensions with UMAP.
+    4. Embed the document-term matrix in two dimensions with UMAP.
     
     5. Cluster the embeddings using HDBSCAN.
     
@@ -51,9 +52,8 @@ def run_pipeline(file_path: Path) -> pd.DataFrame:
     ]
     sample = df.sample(min(100_000, df.shape[0]), random_state=1729)
     sample['docs'] = df['product_title'].str[:] + ' ' + df['review'].str[:]
-    dataset_name = sample['product_category'].unique()[0].replace('_', ' ').title() \
-        if len(sample['product_category'].unique()) == 1 \
-        else 'Multilingual'
+    dataset_name = 'Multilingual' if 'multilingual' in file_path.name \
+        else sample['product_category'].iloc[0].replace('_', ' ').title()
 
     logging.info('TFIDF vectorizing data.')
     stop_words = list(
@@ -112,9 +112,9 @@ if __name__ == '__main__':
         try:
             dfs.append(run_pipeline(file_path))
             logging.info(f'Total time: {(time.time() - start) / 60:,.2f} minutes')
-        except Exception as e:
-            logging.exception(e.args)
+        except:
+            logging.exception(traceback.format_exc())
             continue
 
-    pd.concat(dfs).to_parquet('data/_combined_keywords.parquet', index=False)
+    pd.concat(dfs).to_parquet('data/combined_keywords.parquet', index=False)
     logging.info('Process complete.')

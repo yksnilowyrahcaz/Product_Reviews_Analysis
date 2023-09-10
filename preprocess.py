@@ -4,6 +4,7 @@ from reduce_df_memory import optimize_memory_usage
 import csv
 import pandas as pd
 import time
+import traceback
 
 def preprocess(file_path: Path) -> None:
     '''
@@ -32,7 +33,7 @@ def preprocess(file_path: Path) -> None:
     logging.info('Combining review body with headline.')
     df['review'] = (df['review_headline'] + ' ' + df['review_body']).str.strip()
 
-    logging.info('Dropping uneeded columns.')
+    logging.info('Dropping unneeded columns.')
     df.drop(['marketplace', 'review_headline', 'review_body'], axis=1, inplace=True)
 
     logging.info('Optimizing memory usage.')
@@ -49,6 +50,6 @@ if __name__ == '__main__':
         try:
             preprocess(file_path)
             logging.info(f'Total time: {(time.time() - start) / 60:,.2f} minutes')
-        except Exception as e:
-            logging.exception(e.args)
+        except:
+            logging.exception(traceback.format_exc())
             continue
