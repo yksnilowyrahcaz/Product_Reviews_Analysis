@@ -1,9 +1,8 @@
 # data files
-cleaned_data/
+data/
 extras/
-samples/
-final_submission/
-transformer_model/
+plots/
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
