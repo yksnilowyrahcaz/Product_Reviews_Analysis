@@ -12,11 +12,12 @@ Image: Getty Images
 1. [File Descriptions](#files)
 2. [Supporting Packages](#packages)
 3. [How To Use This Repository](#howto)
-4. [Project Motivation](#motivation)
-5. [About The Dataset](#data)
-6. [Resources](#resources)
-7. [Acknowledgements](#acknowledgements)
-8. [Licence & copyright](#license)
+4. [Results](#results)
+5. [Project Motivation](#motivation)
+6. [About The Dataset](#data)
+7. [Resources](#resources)
+8. [Acknowledgements](#acknowledgements)
+9. [Licence & copyright](#license)
 
 ## File Descriptions <a name="files"></a>
 | File | Description |
@@ -82,6 +83,25 @@ Running `cluster.py` will create two files for each data set:
 Running `sample.py` will create will create two files: 
 - `bad_reviews_sample.parquet`, which includes a sample of, at most, 5k bad (1-3 star rating) reviews from each `*sample_key_topics.parquet` file.
 - `good_reviews_sample.parquet`,  which includes a sample of, at most, 5k good (4-5 star rating) reviews from each `*sample_key_topics.parquet` file.
+
+## Results <a name="results"></a>
+Using UMAP, we can find embedding vectors in lower dimenstions that approximate the fuzzy topological structure of the data in higher dimensions:
+
+<p align="center">
+<img src="images/apparel_embeddings.png" width=600>
+<p/>
+
+We can then cluster these embeddings with HDBSCAN:
+
+<p align="center">
+<img src="images/apparel_clusters.png" width=600>
+<p/>
+
+After clustering the reviews, we can analyze the key topics, keywords, and sentiment of each cluster. Here is a Power BI dashboard example of this:
+
+<p align="center">
+<img src="images/dashboard.png" width=600>
+<p/>
 
 ## Project Motivation <a name="motivation"></a>
 This project was inspired by the 2022 annual Data Mining Competition organized by RSM. The primary question posed was "What can product reviews tell us?"
