@@ -1,6 +1,6 @@
 # Analyzing Amazon Product Reviews
 
-Use TFIDF, UMAP, and HDBSCAN to analyze product reviews
+Using TFIDF, UMAP, and HDBSCAN to analyze product reviews
 
 <p align="center">
 <img src="images/review.jpg" width=600>
@@ -59,13 +59,13 @@ Please see `requirements.txt` for a complete list of packages and dependencies u
 
         pip install -r requirements.txt
 
-6. Download the [Amazon US Customer Reviews Dataset](https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset) from Kaggle, create a folder called "data" in the root of this cloned repo and move the downloaded data sets there. This demo utilizes all of the available product category data sets, including the multilingual data set from Kaggle, but the scripts can be run on a single data set. The complete data set is about 22GB, takes about 33 minutes to download the zip file and about 15 minutes to unzip all the tsv files. If you prefer, you can access the data via Amazon S3 bucket in parquet format. You will need an AWS account for this.
+6. Download the [Amazon US Customer Reviews Dataset](https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset) from Kaggle, create a folder called "data" in the root of this cloned repo and move the downloaded data sets there. This demo utilizes all of the available product category data sets, including the multilingual data set, but the scripts can be run on a single data set. The complete data set is about 22GB, takes about 33 minutes to download the zip file and about 15 minutes to unzip all the tsv files. If you prefer, you can access the data via Amazon S3 bucket in parquet format.
 
 7. Preprocess the tsv files. This command will preprocess all tsv files in the data folder. In my case, this took an average of 1.5 minutes per file and one hour to preprocess all 37 files sequentially on a laptop with four cores (eight processors) and 12GB of RAM. It's recommended to use parallel processing instead. To preprocess specific files, import the `preprocess` function from `preprocess.py` or update the `if __name__ == __main__:` block as needed.
 
         python code/preprocess.py
 
-8. Cluster the reviews and extract key topics and keywords. This command will apply to all files in the data folder with suffix "preprocessed.parquet". In my case, this took an average of 8.2 minutes per file and about five hours to preprocess all 37 files sequentially. It's recommended to use parallel processing instead. To cluster specific files, import the `run_pipeline` function from `cluster.py` or update the `if __name__ == __main__:` block as needed.
+8. Cluster the reviews and extract key topics and keywords. This command will apply to all files in the data folder with suffix "*preprocessed.parquet". In my case, this took an average of 8.2 minutes per file and about five hours to preprocess all 37 files sequentially. It's recommended to use parallel processing instead. To cluster specific files, import the `run_pipeline` function from `cluster.py` or update the `if __name__ == __main__:` block as needed.
 
         python code/cluster.py
 
@@ -87,13 +87,13 @@ Running `sample.py` will create will create two files:
 This project was inspired by the 2022 annual Data Mining Competition organized by RSM. The primary question posed was "What can product reviews tell us?"
 
 ## About The Dataset <a name="data"></a>
- The [Amazon US Customer Reviews Dataset](https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset) from Kaggle consists of millions of customer product reviews that span the period of 1995-2015 and a wide range of product categories, from baby products to software.
+The [Amazon US Customer Reviews Dataset](https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset) from Kaggle consists of millions of customer product reviews that span the period of 1995-2015 and a wide range of product categories, from baby products to software.
 
 ## Resources <a name="resources"></a>
-- [Understanding UMAP](https://pair-code.github.io/understanding-umap/)
+[Understanding UMAP](https://pair-code.github.io/understanding-umap/)
 
 ## Acknowledgements <a name="acknowledgements"></a>
-Thanks to Cynthia Rempel for sharing the data set on Kaggle.
+Thank you to Cynthia Rempel for sharing the data set on Kaggle. Thank you to my Data Mining Competition teammates, Caroline Ingram, Manuj Aggarwal, and Nathan Gossage for their collaboration. We would like to thank RSM for organizing this event.
 
 ## License & copyright <a name="license"></a>
 © Zachary Wolinsky 2023
