@@ -100,7 +100,11 @@ We can then cluster these embeddings with HDBSCAN:
 After clustering the reviews, we can analyze the key topics, keywords, and sentiment of each cluster. Here is a Power BI dashboard example of this:
 
 <p align="center">
-<img src="images/dashboard.png" width=600>
+<img src="images/dashboard-1.png" width=600>
+<p/>
+
+<p align="center">
+<img src="images/dashboard-2.png" width=600>
 <p/>
 
 ## Project Motivation <a name="motivation"></a>
